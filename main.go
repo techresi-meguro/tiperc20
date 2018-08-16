@@ -154,8 +154,8 @@ func handleRegister(api *slack.Client, ev *slack.MessageEvent, address string) {
 	defer db.Close()
 
 	_, err := db.Exec(`
-		INSERT INTO accounts(slack_user_id, ethereum_address) VALUES ($1, $2)
-		ON CONFLICT ON CONSTRAINT accounts_slack_user_id_key
+		INSERT INTO accounts(slack_user_id_string, ethereum_address) VALUES ($1, $2)
+		ON CONFLICT ON CONSTRAINT accounts_slack_user_id_string_key
 		DO UPDATE SET ethereum_address=$2;
 	`, userId, address)
 
@@ -213,7 +213,7 @@ func retrieveAddressFor(userID string) (address string) {
 	defer db.Close()
 
 	db.QueryRow(`
-		SELECT ethereum_address FROM accounts WHERE slack_user_id = $1 LIMIT 1;
+		SELECT ethereum_address FROM accounts WHERE slack_user_id_string = $1 LIMIT 1;
 	`, userID).Scan(&address)
 
 	return
